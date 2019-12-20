@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
+using WPMPublicLib.EnumType;
 
 namespace WPMPublicLib.DBManager
 {
@@ -94,12 +95,13 @@ namespace WPMPublicLib.DBManager
         {
             DataSet dsRes = new DataSet();
             DataTable dtRes = new DataTable();
-            if (string.IsNullOrEmpty(querySql))
-                throw new ArgumentException("无效SQL:空");
-            else if (querySql.ToUpper().IndexOf("SELECT") < 0)
-                throw new ArgumentException("无效SQL：不包含“SELECT”关键字");
-            else
-                querySql = querySql.Trim(' ','"');
+            string errMsg = string.Empty;
+            if (!SqlSimpleCheck(querySql, SqlType.SELECT, ref errMsg))
+            { 
+                //记录错误日志
+            }
+
+            querySql = querySql.Trim(' ','"');
 
             using(OracleDataAdapter dataAda = new OracleDataAdapter())
             {
@@ -177,6 +179,72 @@ namespace WPMPublicLib.DBManager
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region 方法
+        /// <summary>
+        /// sql的简单检查
+        /// 规则一：sql非空
+        /// 规则二：sql 包含必要的关键字
+        /// </summary>
+        /// <param name="sql">sql原文</param>
+        /// <param name="sqlType">sql类型</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns></returns>
+        private bool SqlSimpleCheck(string sql, SqlType sqlType,ref string errMsg)
+        {
+            bool resCheck = true;
+            StringBuilder sbErrMsg = new StringBuilder();
+
+            if (string.IsNullOrEmpty(sql))
+            {
+                sbErrMsg.AppendLine("无效SQL:空");
+                resCheck &= false;
+            }
+
+            sql = sql.ToUpper();
+
+            switch (sqlType)
+            {
+                case SqlType.SELECT:
+                    if (sql.IndexOf("SELECT") < 0)
+                    { 
+                        sbErrMsg.AppendLine("无效SQL：不包含“SELECT”关键字");
+                        resCheck &= false;
+                    }
+                    if (sql.IndexOf("FROM") < 0)
+                    {
+                        sbErrMsg.AppendLine("无需SQL：不包含“FROM”关键字");
+                        resCheck &= false;
+                    }
+                        break;
+                case SqlType.INSERT:
+                    if (sql.IndexOf("INSERT") < 0)
+                    {
+                        sbErrMsg.AppendLine("无效SQL：不包含“INSERT”关键字");
+                        resCheck &= false;
+                    }
+                    break;
+                case SqlType.UPDATE:
+                    if (sql.IndexOf("UPDATE") < 0)
+                    {
+                        sbErrMsg.AppendLine("无效SQL：不包含“UPDATE”关键字");
+                        resCheck &= false;
+                    }
+                    break;
+                case SqlType.DELETE:
+                    if (sql.IndexOf("DELETE") < 0)
+                    {
+                        sbErrMsg.AppendLine("无效SQL：不包含“DELETE”关键字");
+                        resCheck &= false;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return resCheck;
+        }
         #endregion
     }
 }

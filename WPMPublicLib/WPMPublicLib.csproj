@@ -55,6 +55,7 @@
     <Compile Include="DBManager\DbHelper.cs" />
     <Compile Include="DBManager\DbManager.cs" />
     <Compile Include="DBManager\IDbManager.cs" />
+    <Compile Include="EnumType\DbManagerEnum.cs" />
     <Compile Include="HttpHelper\HttpHelper.cs" />
     <Compile Include="HttpHelper\HttpManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
