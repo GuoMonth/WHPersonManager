@@ -143,9 +143,52 @@ namespace WPMPublicLib.DBManager
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 执行删除语句
+        /// 当返回值为-1时 说明执行sql发生异常
+        /// </summary>
+        /// <param name="deleteSql">删除sql</param>
+        /// <returns></returns>
         public int DeleteData(string deleteSql)
         {
-            throw new NotImplementedException();
+            int resRows = 0; //影响的行数
+
+            string errMsg = string.Empty;
+            if (!SqlSimpleCheck(deleteSql, SqlType.DELETE, ref errMsg))
+            {
+                //记录错误日志
+                LogHelper.LogHelper.WriteErrorLog(errMsg);
+                return -1;
+            }
+
+            deleteSql = deleteSql.Trim(' ', '"');
+
+            //打开事务
+            OracleTransaction oracleTransaction = this.m_Conn.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                this.m_Com.CommandType = CommandType.Text;
+                this.m_Com.CommandText = deleteSql;
+                this.m_Com.Connection = this.m_Conn;
+                resRows = this.m_Com.ExecuteNonQuery();
+                oracleTransaction.Commit();
+#if DEBUG
+                LogHelper.LogHelper.WriteInfoLog(string.Format("执行SQL：{0}", deleteSql));
+#endif
+            }
+            catch (Exception ex)
+            {
+
+                LogHelper.LogHelper.WriteErrorLog(string.Format("执行SQL：{0}失败{1}", deleteSql, Environment.NewLine), ex);
+                resRows = -1;
+            }
+            finally
+            {
+                this.m_Conn.Close();
+            }
+
+            return resRows;
         }
 
         public int DeleteData(string deleteSql, object[] objects)
