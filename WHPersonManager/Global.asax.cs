@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using WPMPublicLib.DBManager;
+using WPMPublicLib.LogHelper;
 
 namespace WHPersonManager
 {
@@ -22,7 +23,8 @@ namespace WHPersonManager
         protected void Application_Start(object sender, EventArgs e)
         {
             //启动日志配置
-
+            LogHelper.InitLog();
+            LogHelper.WriteInfoLog("日志工具初始化完成");
             //初始化数据连接配置
             DbHelper.m_ConnStr = "User Id=jhwhpm;Password=jhwhpm;Data Source=(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = 10.10.230.199)(PORT = 1521)))(CONNECT_DATA =(SERVICE_NAME = jhemr)))";
         }

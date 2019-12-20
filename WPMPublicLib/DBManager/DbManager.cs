@@ -88,6 +88,8 @@ namespace WPMPublicLib.DBManager
         
         /// <summary>
         /// 查询sql
+        /// 如果正常执行则返回查询结果
+        /// 如果执行异常则返回null
         /// </summary>
         /// <param name="querySql"></param>
         /// <returns></returns>
@@ -97,8 +99,10 @@ namespace WPMPublicLib.DBManager
             DataTable dtRes = new DataTable();
             string errMsg = string.Empty;
             if (!SqlSimpleCheck(querySql, SqlType.SELECT, ref errMsg))
-            { 
+            {
                 //记录错误日志
+                LogHelper.LogHelper.WriteErrorLog(errMsg);
+                return null;
             }
 
             querySql = querySql.Trim(' ','"');
@@ -116,10 +120,14 @@ namespace WPMPublicLib.DBManager
                     {
                         dtRes = dsRes.Tables[0];
                     }
+#if DEBUG
+                    LogHelper.LogHelper.WriteInfoLog(string.Format("执行SQL：{0}", querySql));
+#endif
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw;
+                    LogHelper.LogHelper.WriteErrorLog(string.Format("执行SQL：{0}失败{1}", querySql, Environment.NewLine), ex);
+                    dtRes = null;
                 }
                 finally
                 {

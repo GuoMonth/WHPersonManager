@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using WPMClient.SysModule;
 using WPMPublicLib.HttpHelper;
+using WPMPublicLib.LogHelper;
 
 namespace WPMClient
 {
@@ -17,9 +18,14 @@ namespace WPMClient
         /// 构造函数
         /// </summary>
         public StartUp()
-        { 
+        {
             //初始化全局缓存类
             //初始化 日志记录工具
+            LogHelper.InitLog();
+            LogHelper.WriteInfoLog("日志工具初始化完成");
+#if DEBUG
+            LogHelper.WriteInfoLog("开始DEBUG");
+#endif
             //初始化 数据库访问类
             HttpHelper.Init(@"http://localhost/WPMServer/Handler/");
         }
