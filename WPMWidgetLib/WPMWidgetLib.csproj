@@ -57,6 +57,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="IControl.resx">
+      <DependentUpon>IControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MenuListControl.resx">
       <DependentUpon>MenuListControl.cs</DependentUpon>
     </EmbeddedResource>

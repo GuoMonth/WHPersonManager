@@ -50,7 +50,7 @@ namespace WPMPublicLib.HttpHelper
         /// <param name="sql"></param>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public int ExecuteNonQuery(string sql, DataTable dt)
+        public static int ExecuteNonQuery(string sql, DataTable dt)
         {
             string msg = string.Format("SQL={0}&DT={1}",sql,JsonConvert.SerializeObject(dt));
             return m_httpManager.PostMessage<int>(m_url + "ExecuteNonSqlHandler.ashx", msg);

@@ -41,8 +41,11 @@
             this.treeViewMenu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeViewMenu.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.treeViewMenu.ForeColor = System.Drawing.Color.White;
+            this.treeViewMenu.FullRowSelect = true;
+            this.treeViewMenu.HotTracking = true;
             this.treeViewMenu.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(85)))), ((int)(((byte)(80)))));
             this.treeViewMenu.Location = new System.Drawing.Point(0, 0);
+            this.treeViewMenu.Margin = new System.Windows.Forms.Padding(4);
             this.treeViewMenu.Name = "treeViewMenu";
             treeNode1.Name = "节点0";
             treeNode1.Text = "节点0";
@@ -56,16 +59,18 @@
             this.treeViewMenu.ShowLines = false;
             this.treeViewMenu.ShowPlusMinus = false;
             this.treeViewMenu.ShowRootLines = false;
-            this.treeViewMenu.Size = new System.Drawing.Size(149, 489);
+            this.treeViewMenu.Size = new System.Drawing.Size(224, 734);
             this.treeViewMenu.TabIndex = 0;
+            this.treeViewMenu.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewMenu_AfterSelect);
             // 
             // MenuListControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeViewMenu);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MenuListControl";
-            this.Size = new System.Drawing.Size(149, 489);
+            this.Size = new System.Drawing.Size(224, 734);
             this.ResumeLayout(false);
 
         }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using WPMPublicLib.HttpHelper;
@@ -40,6 +41,10 @@ namespace WPMClient
         {
             //加载菜单
            this.InitMenu();
+
+            //事件绑定
+            //菜单列表事件
+            this.menuListControl1.m_AfterSelect += AfterNodeSelect;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -81,6 +86,31 @@ namespace WPMClient
             this.menuListControl1.InitMenu(listMenu);
 
            
+        }
+
+        /// <summary>
+        /// 节点选中后，调用此方法
+        /// </summary>
+        /// <param name="menuId"></param>
+        /// <param name="dllName"></param>
+        /// <param name="spaceName"></param>
+        /// <param name="className"></param>
+        private void AfterNodeSelect(string menuId, string dllName, string spaceName, string className)
+        {
+            //反射加载Control 用dllName区分内部dll与外部dll
+            Assembly assembly = "SYS".Equals(dllName.ToUpper()) ? Assembly.GetExecutingAssembly() : Assembly.LoadFile(dllName); // dllName为SYS时，为此程序内部功能。不为SYS时，为外部DLL
+            object obj = assembly.CreateInstance(string.Format("{0}.{1}",spaceName.Trim().Trim('.'),className.Trim().Trim('.')));
+            IControl ic = obj as IControl;
+
+            this.panelMenu.SuspendLayout();
+            if(this.panelMenu.Controls.Count > 0)
+            {
+                this.panelMenu.Controls[0].Visible = false; //可在此处添加页面之间传参
+            }
+            this.panelMenu.Controls.Clear();
+            this.panelMenu.Controls.Add(ic);
+            this.panelMenu.ResumeLayout();
+            Application.DoEvents();
         }
 
         #endregion

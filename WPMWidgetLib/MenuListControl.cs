@@ -11,11 +11,49 @@ namespace WPMWidgetLib
 {
     public partial class MenuListControl : UserControl
     {
+        private Action<string, string, string, string> m_afterSelect;
+
+        /// <summary>
+        /// 委托 节点选择后触发执行
+        /// 四个string类型参数，依次为：MenuId、DllName、NameSpace、ClassName
+        /// </summary>
+        public Action<string, string, string, string> m_AfterSelect 
+        {
+            get
+            {
+                return this.m_afterSelect;
+            }
+            set
+            {
+
+                if (this.m_afterSelect == null)
+                {
+                    this.m_afterSelect = value;
+                }
+                else
+                {
+                    lock (this.m_afterSelect)
+                    {
+                        this.m_afterSelect += value;
+                    }
+                }
+            }
+        }
+
+        #region 构造函数
+
+        /// <summary>
+        /// 无参构造函数
+        /// </summary>
         public MenuListControl()
         {
             InitializeComponent();
             
         }
+
+        #endregion
+
+        #region 方法
 
         /// <summary>
         /// 初始化菜单列表
@@ -48,6 +86,27 @@ namespace WPMWidgetLib
                 }
             }
         }
+
+        #endregion
+
+        #region 事件
+
+        /// <summary>
+        /// 更改节点选项后触发
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void treeViewMenu_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            var action = m_AfterSelect; //避免m_AfterSelect瞬间被置为null的情况 虽然此处几乎不会发生 但应保持优良习惯
+            if (action != null)
+            {
+                EntityMenu entityMenu = e.Node.Tag as EntityMenu;
+                action(entityMenu.m_MenuId,entityMenu.m_DllName,entityMenu.m_NameSpace,entityMenu.m_ClassName);
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>

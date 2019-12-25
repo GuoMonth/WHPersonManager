@@ -149,46 +149,13 @@ namespace WPMPublicLib.DBManager
         /// </summary>
         /// <param name="deleteSql">删除sql</param>
         /// <returns></returns>
-        public int DeleteData(string deleteSql)
+        public string DeleteData(string deleteSql)
         {
-            int resRows = 0; //影响的行数
-
             string errMsg = string.Empty;
-            if (!SqlSimpleCheck(deleteSql, SqlType.DELETE, ref errMsg))
-            {
-                //记录错误日志
-                LogHelper.LogHelper.WriteErrorLog(errMsg);
-                return -1;
-            }
 
-            deleteSql = deleteSql.Trim(' ', '"');
+            int resRows = this.ExecuteNonQuery(deleteSql, SqlType.DELETE, ref errMsg);
 
-            //打开事务
-            OracleTransaction oracleTransaction = this.m_Conn.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            try
-            {
-                this.m_Com.CommandType = CommandType.Text;
-                this.m_Com.CommandText = deleteSql;
-                this.m_Com.Connection = this.m_Conn;
-                resRows = this.m_Com.ExecuteNonQuery();
-                oracleTransaction.Commit();
-#if DEBUG
-                LogHelper.LogHelper.WriteInfoLog(string.Format("执行SQL：{0}", deleteSql));
-#endif
-            }
-            catch (Exception ex)
-            {
-
-                LogHelper.LogHelper.WriteErrorLog(string.Format("执行SQL：{0}失败{1}", deleteSql, Environment.NewLine), ex);
-                resRows = -1;
-            }
-            finally
-            {
-                this.m_Conn.Close();
-            }
-
-            return resRows;
+            return resRows > -1 ? resRows.ToString() : errMsg;
         }
 
         public int DeleteData(string deleteSql, object[] objects)
@@ -196,9 +163,13 @@ namespace WPMPublicLib.DBManager
             throw new NotImplementedException();
         }
 
-        public int InsertData(string insertSql)
+        public string InsertData(string insertSql)
         {
-            throw new NotImplementedException();
+            string errMsg = string.Empty;
+
+            int resRows = this.ExecuteNonQuery(insertSql, SqlType.INSERT, ref errMsg);
+
+            return resRows > -1 ? resRows.ToString() : errMsg;
         }
 
         public int InsertData(string insertSql, object[] objects)
@@ -211,9 +182,13 @@ namespace WPMPublicLib.DBManager
             throw new NotImplementedException();
         }
 
-        public int UpdateData(string updateSql)
+        public string UpdateData(string updateSql)
         {
-            throw new NotImplementedException();
+            string errMsg = string.Empty;
+
+            int resRows = this.ExecuteNonQuery(updateSql, SqlType.UPDATE, ref errMsg);
+
+            return resRows > -1 ? resRows.ToString() : errMsg;
         }
 
         public int UpdateData(string updateSql, object[] objects)
@@ -224,15 +199,105 @@ namespace WPMPublicLib.DBManager
         #endregion
 
         #region 接口实现 IDisposable
+        /*
+         * 托管资源：由CLR管理分配和释放的资源，即由CLR里new出来的对象；
+         * 非托管资源：不受CLR管理的对象，windows内核对象，如文件、数据库连接、套接字、COM对象等；
+         * 官方示例：
+         * https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1063?view=vs-2019
+         * **/
+
+        /// <summary>
+        /// 析构函数（终结器）
+        /// </summary>
+        ~DbManager()
+        {
+            Dispose(false); //释放非托管资源
+        }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            this.Dispose(true); //释放托管资源、非托管资源
+            GC.SuppressFinalize(this); //不再调用析构函数（终结器）
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            //释放托管资源
+            if (disposing)
+            { 
+                //以后此类中增加的托管资源在此释放
+            }
+
+            //释放非托管资源
+            if (this.m_com != null)
+            {
+                this.m_com.Dispose();
+                this.m_com = null;
+            }
+
+            if (this.m_conn != null)
+            {
+                this.m_conn.Dispose();
+                this.m_conn = null;
+            }
         }
 
         #endregion
 
         #region 方法
+
+        /// <summary>
+        /// 执行sql 插入、更新、删除
+        /// 返回影响行数
+        /// 如果返回-1，那么表示执行失败
+        /// </summary>
+        /// <param name="sql">待执行的sql</param>
+        /// <param name="sqlType">sql类型：插入、删除、更新</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns></returns>
+        private int ExecuteNonQuery(string sql, SqlType sqlType, ref string errMsg)
+        {
+            int resRows = 0; //影响的行数
+
+            errMsg = string.Empty;
+            if (!SqlSimpleCheck(sql, sqlType, ref errMsg))
+            {
+                //记录错误日志
+                LogHelper.LogHelper.WriteErrorLog(errMsg);
+                return -1;
+            }
+
+            sql = sql.Trim(' ', '"');
+
+            //打开事务
+            OracleTransaction oracleTransaction = this.m_Conn.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                this.m_Com.CommandType = CommandType.Text;
+                this.m_Com.CommandText = sql;
+                this.m_Com.Connection = this.m_Conn;
+                resRows = this.m_Com.ExecuteNonQuery();
+                oracleTransaction.Commit();
+#if DEBUG
+                LogHelper.LogHelper.WriteInfoLog(string.Format("执行SQL：{0}", sql));
+#endif
+            }
+            catch (Exception ex)
+            {
+
+                LogHelper.LogHelper.WriteErrorLog(string.Format("执行SQL：{0}失败{1}", sql, Environment.NewLine), ex);
+                resRows = -1;
+            }
+            finally
+            {
+                this.m_Conn.Close();
+            }
+
+            return resRows;
+        }
+
         /// <summary>
         /// sql的简单检查
         /// 规则一：sql非空

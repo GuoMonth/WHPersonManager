@@ -11,9 +11,18 @@ namespace WPMWidgetLib
 {
     public partial class IControl : UserControl
     {
+
+        #region 构造函数
+        
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public IControl()
         {
             InitializeComponent();
         }
+
+        #endregion
+
     }
 }

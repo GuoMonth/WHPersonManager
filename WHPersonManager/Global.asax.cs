@@ -26,7 +26,7 @@ namespace WHPersonManager
             LogHelper.InitLog();
             LogHelper.WriteInfoLog("日志工具初始化完成");
             //初始化数据连接配置
-            DbHelper.m_ConnStr = "User Id=jhwhpm;Password=jhwhpm;Data Source=(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = 10.10.230.199)(PORT = 1521)))(CONNECT_DATA =(SERVICE_NAME = jhemr)))";
+            DbHelper.m_ConnStr = "User Id=NURSE_MANAGE_V15;Password=mandala;Data Source=(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.73.128)(PORT = 1521)))(CONNECT_DATA =(SERVICE_NAME = orcl)))";
         }
 
         protected void Session_Start(object sender, EventArgs e)

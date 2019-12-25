@@ -33,7 +33,7 @@ namespace WPMPublicLib.DBManager
         /// </summary>
         /// <param name="deleteSql"></param>
         /// <returns></returns>
-        int DeleteData(string deleteSql);
+        string DeleteData(string deleteSql);
 
         /// <summary>
         /// 
@@ -48,7 +48,7 @@ namespace WPMPublicLib.DBManager
         /// </summary>
         /// <param name="insertSql"></param>
         /// <returns></returns>
-        int InsertData(string insertSql);
+        string InsertData(string insertSql);
 
         /// <summary>
         /// 
@@ -67,7 +67,7 @@ namespace WPMPublicLib.DBManager
         /// <returns>影响的行数（插入的记录数）</returns>
         int InsertData(DataSet insertData);
 
-        int UpdateData(string updateSql);
+        string UpdateData(string updateSql);
 
         int UpdateData(string updateSql, object[] objects);
     }
