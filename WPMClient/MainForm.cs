@@ -62,7 +62,8 @@ namespace WPMClient
         private void InitMenu()
         {
 
-            DataTable dtMenu = HttpHelper.ExecuteQuery(s_QueryMenu);
+            ResponseMsg<DataTable> responseMsg = HttpHelper.ExecuteQuery(s_QueryMenu);
+            DataTable dtMenu = responseMsg.m_Data;
 
             if (dtMenu == null || dtMenu.Rows.Count < 1)
             {

@@ -58,6 +58,8 @@
     <Compile Include="EnumType\DbManagerEnum.cs" />
     <Compile Include="HttpHelper\HttpHelper.cs" />
     <Compile Include="HttpHelper\HttpManager.cs" />
+    <Compile Include="HttpHelper\RequestMsg.cs" />
+    <Compile Include="HttpHelper\ResponseMsg.cs" />
     <Compile Include="LogHelper\LogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

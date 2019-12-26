@@ -41,6 +41,9 @@ namespace WPMClient.SysModule
                 , this.txt_dllName.Text,this.txt_nameSpace.Text,this.txt_className.Text
                 ,this.txt_showName.Text,this.txt_fatherID.Text,"007","007");
 
+            DataTable dt = new DataTable();
+            dt.Columns.Add("1",typeof(string));
+
             HttpHelper.ExecuteNonQuery(insertSql,null);
         }
     }

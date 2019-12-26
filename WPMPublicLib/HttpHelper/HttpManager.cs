@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using Newtonsoft.Json;
 using System.IO;
+using System.Data;
 
 namespace WPMPublicLib.HttpHelper
 {
@@ -17,12 +18,12 @@ namespace WPMPublicLib.HttpHelper
         /// <param name="url"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public T PostMessage<T>(string url,string msg)
+        public ResponseMsg<T> PostMessage<T>(string url, RequestMsg msg)
         {
             string result = string.Empty;
             HttpWebRequest request = null;
             HttpWebResponse res = null;
-            string postDataStr = msg;
+            string postDataStr = Convert2Json(msg);
             byte[] bytData = null;
             try
             {
@@ -46,8 +47,7 @@ namespace WPMPublicLib.HttpHelper
                     sr.Close();
                 }
 
-                return JsonConvert.DeserializeObject<T>(result);
-
+                return JsonConvert.DeserializeObject<ResponseMsg<T>>(result);
             }
             catch (WebException ex)
             {
@@ -75,11 +75,12 @@ namespace WPMPublicLib.HttpHelper
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
-        public string GetPostMsg(Stream sr)
+        public RequestMsg GetPostMsg(Stream sr)
         {
             byte[] b = new byte[sr.Length];
             sr.Read(b, 0, (int)sr.Length);
-            return Encoding.UTF8.GetString(b);
+            string reqStr = Encoding.UTF8.GetString(b);
+            return JsonConver2Object<RequestMsg>(reqStr);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace WPMPublicLib.HttpHelper
         /// <returns></returns>
         public T JsonConver2Object<T>(string json)
         {
-            return JsonConver2Object<T>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         /// <summary>

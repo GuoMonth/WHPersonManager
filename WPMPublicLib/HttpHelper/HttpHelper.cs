@@ -36,11 +36,13 @@ namespace WPMPublicLib.HttpHelper
         /// <param name="url"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static DataTable ExecuteQuery(string sql)
+        public static ResponseMsg<DataTable> ExecuteQuery(string sql)
         {
-
-            return m_httpManager.PostMessage<DataTable>(m_url + "QueryDataHandler.ashx", sql);
-
+            RequestMsg requestMsg = new RequestMsg();
+            requestMsg.m_Sql = sql;
+            requestMsg.m_SqlType = EnumType.SqlType.SELECT;
+            requestMsg.m_Data = new DataTable();
+            return m_httpManager.PostMessage<DataTable>(m_url + "QueryDataHandler.ashx", requestMsg);
         }
 
         /// <summary>
@@ -50,12 +52,21 @@ namespace WPMPublicLib.HttpHelper
         /// <param name="sql"></param>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(string sql, DataTable dt)
+        public static ResponseMsg<int> ExecuteNonQuery(string sql, DataTable dt)
         {
-            string msg = string.Format("SQL={0}&DT={1}",sql,JsonConvert.SerializeObject(dt));
-            return m_httpManager.PostMessage<int>(m_url + "ExecuteNonSqlHandler.ashx", msg);
+            RequestMsg requestMsg = new RequestMsg();
+            requestMsg.m_Sql = sql;
+            sql = sql.Trim().ToUpper();
+            if(sql.StartsWith("INSERT"))
+                requestMsg.m_SqlType = EnumType.SqlType.INSERT;
+            else if (sql.StartsWith("DELETE"))
+                requestMsg.m_SqlType = EnumType.SqlType.DELETE;
+            else if(sql.StartsWith("UPDATE"))
+                requestMsg.m_SqlType = EnumType.SqlType.UPDATE;
+            else
+                requestMsg.m_SqlType = EnumType.SqlType.SELECT;
+            requestMsg.m_Data = dt ?? new DataTable();
+            return m_httpManager.PostMessage<int>(m_url + "ExecuteNonSqlHandler.ashx", requestMsg);
         }
-           
-
     }
 }

@@ -25,7 +25,9 @@ namespace WPMClient.SysModule
             string queryUser = string.Format(@"select ID from sys_users su 
                                                 where su.login_name = '{0}' and su.password = '{1}'"
                 , loginName, passWord);
-            DataTable queryUserDt = HttpHelper.ExecuteQuery(queryUser);
+            ResponseMsg<DataTable> responseMsg = HttpHelper.ExecuteQuery(queryUser);
+            DataTable queryUserDt = responseMsg.m_Data;
+
             if (queryUserDt != null && queryUserDt.Rows.Count > 0) 
             {
                 //校验通过进入主程序 
